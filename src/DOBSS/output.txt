@@ -42,7 +42,7 @@ Cutting planes:
   MIR: 3
   Flow cover: 29
 
-Explored 221 nodes (2099 simplex iterations) in 0.06 seconds
+Explored 221 nodes (2099 simplex iterations) in 0.08 seconds
 Thread count was 12 (of 12 available processors)
 
 Optimal solution found (tolerance 1.00e-04)
