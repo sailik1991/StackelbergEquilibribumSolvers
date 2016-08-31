@@ -9,14 +9,14 @@ Attack1|Attack2|Attack9
 5,-8 -2,6 0,0
 0.35
 4
-Attack1|Attack4|Attack7|Attack9
+Attack1|Attack4|Attack1+Attack4|Attack9
 -2,6 5,-2 2,6 0,0
 5,-8 5,-2 10,-10 0,0
 -2,6 -10,10 -10,10 0,0
 5,-8 -10,10 -5,10 0,0
 0.05
 9
-Attack1|Attack2|Attack3|Attack4|Attack5|Attack6|Attack7|Attack8|Attack9
+Attack1|Attack2|Attack3|Attack4|Attack1+Attack3|Attack2+Attack3|Attack1+Attack4|Attack2+Attack4|Attack9
 -2,6 5,-8 -10,10 5,-2 -10,10 -5,10 2,6 10,-10 0,0
 5,-8 -2,6 -10,10 5,-2 -5,10 -10,10 10,-10 2,6 0,0
 -2,6 5,-8 5,-2 -10,10 2,6 10,-10 -10,10 -5,10 0,0
