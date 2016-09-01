@@ -190,10 +190,8 @@ allSet = []
 for attacks in attack_sets:
     obj, var = solveBSG(attacks)
     allSet.append((attacks, obj))
-    if obj >= maxObj:
+    if obj > maxObj:
         maxObj = obj
-        bestSet.append(attacks)
-        maxVar = var
 
 #for var in maxVar:
 #    print str(var)
@@ -201,4 +199,7 @@ print '====='
 print allSet
 print '====='
 print 'Best Obj value -> ' + str(maxObj)
-print 'Best set to take out -> ' + str(bestSet)
+
+for attacks, obj in allSet:
+    if obj == maxObj:
+        print attacks
