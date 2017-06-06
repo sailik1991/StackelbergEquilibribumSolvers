@@ -4,77 +4,82 @@
 0.1
 Optimize a model with 47 rows, 29 columns and 224 nonzeros
 Model has 68 quadratic objective terms
+Variable types: 8 continuous, 21 integer (0 binary)
 Coefficient statistics:
-  Matrix range    [1e+00, 1e+08]
-  Objective range [0e+00, 0e+00]
-  Bounds range    [1e+00, 1e+00]
-  RHS range       [1e+00, 1e+08]
+  Matrix range     [1e+00, 1e+08]
+  Objective range  [0e+00, 0e+00]
+  QObjective range [2e-01, 7e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+08]
 Presolve removed 6 rows and 2 columns
 Presolve time: 0.00s
 Presolved: 143 rows, 95 columns, 394 nonzeros
 Variable types: 76 continuous, 19 integer (19 binary)
 Found heuristic solution: objective -1.0125000
 
-Root relaxation: objective 7.700000e+00, 63 iterations, 0.00 seconds
+Root relaxation: objective 7.700000e+00, 62 iterations, 0.00 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
      0     0    7.70000    0    8   -1.01250    7.70000   860%     -    0s
-     0     0    6.77840    0   15   -1.01250    6.77840   769%     -    0s
-     0     0    6.64319    0   14   -1.01250    6.64319   756%     -    0s
-     0     0    5.77100    0   14   -1.01250    5.77100   670%     -    0s
-H    0     0                      -0.7017857    5.77100   922%     -    0s
-     0     0    5.76499    0   13   -0.70179    5.76499   921%     -    0s
-H    0     0                       0.3446429    5.76499  1573%     -    0s
-     0     0    5.37573    0   15    0.34464    5.37573  1460%     -    0s
-     0     0    5.37049    0   13    0.34464    5.37049  1458%     -    0s
-     0     0    5.30638    0   10    0.34464    5.30638  1440%     -    0s
-     0     0    5.30360    0   11    0.34464    5.30360  1439%     -    0s
-     0     0    5.28942    0   11    0.34464    5.28942  1435%     -    0s
-     0     0    5.28942    0   11    0.34464    5.28942  1435%     -    0s
-     0     2    5.28942    0   11    0.34464    5.28942  1435%     -    0s
-*   25     0              12       0.9121429    4.83952   431%  16.8    0s
+H    0     0                      -0.2714286    7.70000  2937%     -    0s
+     0     0    6.31722    0   15   -0.27143    6.31722  2427%     -    0s
+     0     0    4.97494    0   14   -0.27143    4.97494  1933%     -    0s
+     0     0    4.89516    0   12   -0.27143    4.89516  1903%     -    0s
+H    0     0                       0.3446429    4.89516  1320%     -    0s
+     0     0    4.85695    0   13    0.34464    4.85695  1309%     -    0s
+     0     0    4.80362    0   12    0.34464    4.80362  1294%     -    0s
+     0     0    4.77754    0   12    0.34464    4.77754  1286%     -    0s
+     0     0    4.64906    0   12    0.34464    4.64906  1249%     -    0s
+     0     0    4.64744    0   12    0.34464    4.64744  1248%     -    0s
+H    0     0                       0.9121429    4.64744   410%     -    0s
+     0     0    4.64040    0   12    0.91214    4.64040   409%     -    0s
+     0     0    4.64040    0   12    0.91214    4.64040   409%     -    0s
+     0     2    4.64040    0   12    0.91214    4.64040   409%     -    0s
 
 Cutting planes:
   Gomory: 1
-  Implied bound: 17
-  MIR: 3
-  Flow cover: 29
+  Implied bound: 12
+  MIR: 7
+  Flow cover: 12
 
-Explored 221 nodes (2099 simplex iterations) in 0.08 seconds
+Explored 140 nodes (1333 simplex iterations) in 0.06 seconds
 Thread count was 12 (of 12 available processors)
 
+Solution count 4: 0.912143 0.344643 -0.271429 -1.0125 
+Pool objective bound 0.912143
+
 Optimal solution found (tolerance 1.00e-04)
-Best objective 9.121428571429e-01, best bound 9.121428571429e-01, gap 0.0%
+Best objective 9.121428571429e-01, best bound 9.121428571429e-01, gap 0.0000%
 ---------------
 x-0 -> 0.428571
 x-1 -> 0.414286
 x-2 -> 0
 x-3 -> 0.157143
-0-Attack1 -> 0
+0-Attack1 -> -0
 0-Attack2 -> 1
 0-Attack9 -> 0
 a-0 -> 0
 1-Attack1 -> 0
-1-Attack4 -> 0
-1-Attack7 -> 1
-1-Attack9 -> 0
+1-Attack4 -> -0
+1-Attack1+Attack4 -> 1
+1-Attack9 -> -0
 a-1 -> 0
 2-Attack1 -> 0
-2-Attack2 -> 0
+2-Attack2 -> -0
 2-Attack3 -> 0
-2-Attack4 -> 0
-2-Attack5 -> 0
-2-Attack6 -> 1
-2-Attack7 -> 0
-2-Attack8 -> 0
+2-Attack4 -> -0
+2-Attack1+Attack3 -> -0
+2-Attack2+Attack3 -> 1
+2-Attack1+Attack4 -> -0
+2-Attack2+Attack4 -> -0
 2-Attack9 -> 0
 a-2 -> 9.37143
-3-Attack1 -> 0
+3-Attack1 -> -0
 3-Attack2 -> 0
 3-Attack3 -> 1
-3-Attack4 -> 0
+3-Attack4 -> -0
 3-Attack9 -> 0
 a-3 -> 8.11429
 ---------------
