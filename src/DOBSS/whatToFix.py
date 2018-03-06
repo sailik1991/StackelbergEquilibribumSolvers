@@ -17,6 +17,10 @@ from itertools import *
 from sys import *
 from copy import deepcopy
 
+__author__ = "Sailik Sengupta"
+__version__ = "1.0"
+__email__ = "link2sailik [at] gmail [dot] com"
+
 def getAllAttacks():
     '''
     Reads the input file to obtain attacks for all attackers

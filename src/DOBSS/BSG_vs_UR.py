@@ -14,6 +14,10 @@
 
 from gurobipy import *
 
+__author__ = "Sailik Sengupta"
+__version__ = "1.0"
+__email__ = "link2sailik [at] gmail [dot] com"
+
 try:
 
     #Create a new model
