@@ -10,7 +10,7 @@ __version__ = "1.0"
 __email__ = "link2sailik [at] gmail [dot] com"
 
 from gurobipy import *
-import sys
+import sys, pickle
 
 NUM_TARGETS = 0
 NUM_RESOURCES = 0
@@ -27,12 +27,12 @@ def read_data(filename):
     ------ Input file ------
     | No. of targets (n)
     | Defender's resources (rd), attacker's resources (ad)
-    | R(c)_1,R(u)_1
+    | R(c)_1 R(u)_1
     | ...
-    | R(c)_n,R(u)_n
-    | C(c)_1,C(u)_1
+    | R(c)_n R(u)_n
+    | C(c)_1 C(u)_1
     | ...
-    | C(c)_n,C(u)_n
+    | C(c)_n C(u)_n
     ------ Example (see BSSG_input.txt)------
     | 4
     | 2
@@ -63,6 +63,7 @@ def read_data(filename):
         C.append(map(float, f.readline().strip().split(' ')))
 
 def attack_target(t_attacked):
+    print(NUM_TARGETS, NUM_RESOURCES, C, R)
     #Create a new model
     m = Model("MILP")
     
@@ -79,25 +80,25 @@ def attack_target(t_attacked):
     for r in range(NUM_RESOURCES):
         p_r = []
         for t in range(NUM_TARGETS):
-            name = "p-"+str(r)+str(t)
+            name = "mp-"+str(r)+"-"+str(t)
             p_r.append(m.addVar(lb=0, ub=1, vtype=GRB.CONTINUOUS, name=name))
         p_rt.append(p_r)
     m.update()
 
-    # For every target t, sum_r (p-r-t) = 1
+    # For every target t, sum_r (p-r-t) <= p_t
     for t in range(NUM_TARGETS):
         for_all_target_con = LinExpr()
         for r in range(NUM_RESOURCES):
             for_all_target_con.add( p_rt[r][t] )
-        m.addConstr( for_all_target_con <= 1 )
+        m.addConstr( for_all_target_con == p[t] )
     m.update()
 
-    # For every resource r, sum_t (p-r-t) = p_r
+    # For every resource r, sum_t (p-r-t) <= 1
     for r in range(NUM_RESOURCES):
         for_all_resource_con = LinExpr()
         for t in range(NUM_TARGETS):
             for_all_resource_con.add( p_rt[r][t] )
-        m.addConstr( for_all_resource_con == p[r] )
+        m.addConstr( for_all_resource_con <= 1 )
     m.update()
 
     # Constraints to ensure the target attacked gives attacker the max uitlity
@@ -118,18 +119,19 @@ def attack_target(t_attacked):
     # Solve MILP
     m.optimize()
 
-    # Print out values
-    def printSeperator():
-        print ('---------------')
+    def_reward = m.objVal
+    def_marg_prob = [[0.0 for t in range(NUM_TARGETS)] for r in range(NUM_RESOURCES)]
 
-    printSeperator()
+    print ('---------------')
     for v in m.getVars():
         print('%s -> %g' % (v.varName, v.x))
+        if 'mp' in v.varName:
+            waste, r, c = v.varName.split('-')
+            def_marg_prob[int(r)][int(c)] = v.x
 
-    def_reward = m.objVal
-    printSeperator()
+    print ('---------------')
     print('Obj -> %g' % m.objVal)
-    printSeperator()
+    print ('---------------')
 
     '''
     === Uncomment if needed for debugging === 
@@ -142,13 +144,23 @@ def attack_target(t_attacked):
     '''
 
     m.reset()
-    return(def_reward)
+    return(def_reward, def_marg_prob)
+
+def main(filename):
+    read_data(filename)
+    obj_vals = []
+    mp = []
+    for t in range(NUM_TARGETS):
+        val, marg_prob = attack_target(t)
+        obj_vals.append(val)
+        mp.append(marg_prob)
+    
+    best_def_reward = max(obj_vals)
+    best_mp =  mp[obj_vals.index(best_def_reward)]
+
+    f = open(r'best_marg_prob.pkl', 'wb')
+    pickle.dump(best_mp, f)
+    f.close()
 
 if __name__ == '__main__':
-    read_data(sys.argv[1])
-    print(NUM_TARGETS, NUM_RESOURCES, C, R)
-    obj_vals = []
-    for t in range(NUM_TARGETS):
-        obj_vals.append(attack_target(t))
-    print(obj_vals)
-    print(max(obj_vals))
+    main(sys.argv[1])
