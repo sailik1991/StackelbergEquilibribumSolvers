@@ -26,7 +26,7 @@ def read_data(filename):
     '''
     ------ Input file ------
     | No. of targets (n)
-    | Defender's resources (rd), attacker's resources (ad)
+    | Defender's resources (rd)
     | R(c)_1 R(u)_1
     | ...
     | R(c)_n R(u)_n

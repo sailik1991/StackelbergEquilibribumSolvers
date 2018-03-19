@@ -189,4 +189,6 @@ def solution_cleaner(X, solution):
 def constrained_birkhoff_von_neumann_decomposition(X,constraint_structure):
   S = {index for index, x in np.ndenumerate(X)}
   feasibility_test(X,constraint_structure)
-  print(solution_cleaner(X, iterate_constrained_birkhoff_von_neumann_iterator(X, graph_constructor(X, bihierarchy_test(constraint_structure), constraint_structure ) ) ) ) 
+  #print(solution_cleaner(X, iterate_constrained_birkhoff_von_neumann_iterator(X, graph_constructor(X, bihierarchy_test(constraint_structure), constraint_structure ) ) ) ) 
+  return(solution_cleaner(X, iterate_constrained_birkhoff_von_neumann_iterator(X, graph_constructor(X, bihierarchy_test(constraint_structure), constraint_structure ) ) ) ) 
+
