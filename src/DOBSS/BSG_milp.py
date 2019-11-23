@@ -5,8 +5,8 @@
 #   subject to
 #       For each l, Sum_i Sum_j z[l][i][j]  = 1
 #       For each l,  Sum_j z[l][i][j] <= 1
-#	For each l,  q[l][j] <= Sum_i z[l][i][j] <= 1
-#	For each l,  Sum_j q[l][j] = 1
+# 	For each l,  q[l][j] <= Sum_i z[l][i][j] <= 1
+# 	For each l,  Sum_j q[l][j] = 1
 #       For each l & all i, 0 <= a[l] - C[l][i][j] * Sum_j z[l][i][j]
 #       For each l & all i, a[l] - C[l][i][j] * Sum_j z[l][i][j] <= (1-y[l][j])M
 #       For all l, Sum_j z[l][i][j] = Sum_j z[0][i][j]
@@ -25,11 +25,11 @@ try:
     # k-set critical attacks
     k = 1
 
-    #Create a new model
+    # Create a new model
     m = Model("MILP")
 
-    f = open(sys.argv[1], 'r')
-    '''
+    f = open(sys.argv[1], "r")
+    """
     ------ Input file ------
     No. of defender strategies (X)
     No. of attackers (L)
@@ -55,7 +55,7 @@ try:
     | 5,0 4,2
     | 4,2 5,0
     |----------------------------------------
-    '''
+    """
 
     # Add defender stategies to the model
     X = int(f.readline())
@@ -74,21 +74,21 @@ try:
         q = []
         cve_names = f.readline().strip().split("|")
         for i in range(Q):
-            n = 'attacker'+str(l)+'-'+cve_names[i]
+            n = "attacker" + str(l) + "-" + cve_names[i]
             q.append(m.addVar(lb=0, ub=1, vtype=GRB.INTEGER, name=n))
         m.update()
 
         sum_q_1 = LinExpr()
         for i in range(Q):
             sum_q_1.add(q[i])
-        m.addConstr( sum_q_1 == 1 )
+        m.addConstr(sum_q_1 == 1)
 
         ##### z #####
         z = []
         for i in range(X):
             zr = []
             for j in range(Q):
-                n = 'z'+str(l)+'-x'+str(i)+'-q'+str(j)
+                n = "z" + str(l) + "-x" + str(i) + "-q" + str(j)
                 zr.append(m.addVar(lb=0, ub=1, vtype=GRB.CONTINUOUS, name=n))
             z.append(zr)
         m.update()
@@ -99,21 +99,23 @@ try:
             for j in range(Q):
                 sum_ij.add(z[i][j])
                 sum_j.add(z[i][j])
-            m.addConstr( sum_j <=1 )
+            m.addConstr(sum_j <= 1)
             if l == 0:
-                x.append( sum_j )
+                x.append(sum_j)
             else:
-                m.addConstr( sum_j == x[i] )
-        m.addConstr( sum_ij == 1 )
+                m.addConstr(sum_j == x[i])
+        m.addConstr(sum_ij == 1)
 
         for j in range(Q):
             sum_i = LinExpr()
             for i in range(X):
                 sum_i.add(z[i][j])
-            m.addConstr(sum_i <= 1 )
-            m.addConstr(sum_i >= q[j] )
+            m.addConstr(sum_i <= 1)
+            m.addConstr(sum_i >= q[j])
 
-        a = m.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-"+str(l))
+        a = m.addVar(
+            lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-" + str(l)
+        )
 
         m.update()
 
@@ -135,7 +137,7 @@ try:
         for i in range(X):
             for j in range(Q):
                 r = p * float(R[i][j])
-                obj.add( r * z[i][j]  )
+                obj.add(r * z[i][j])
 
         # Add constrains to make attacker select dominant pure strategy
         for j in range(Q):
@@ -145,9 +147,9 @@ try:
                 x_con = LinExpr()
                 for k in range(Q):
                     x_con.add(z[i][k])
-                val.add( float(C[i][j]) * x_con, -1.0)
-            m.addConstr( val >= 0 )
-            m.addConstr( val <= (1-q[j]) * M )
+                val.add(float(C[i][j]) * x_con, -1.0)
+            m.addConstr(val >= 0)
+            m.addConstr(val <= (1 - q[j]) * M)
 
         m.update()
 
@@ -159,22 +161,22 @@ try:
 
     # Print out values
     def printSeperator():
-        print ('---------------')
+        print("---------------")
 
     printSeperator()
     for v in m.getVars():
-        print('%s -> %g' % (v.varName, v.x))
+        print("%s -> %g" % (v.varName, v.x))
 
     printSeperator()
-    print('Obj -> %g' % m.objVal)
+    print("Obj -> %g" % m.objVal)
     printSeperator()
 
     # Prints constrains
-    #printSeperator()
-    #for c in m.getConstrs():
+    # printSeperator()
+    # for c in m.getConstrs():
     #    if c.Slack == 0.0:
     #        print(str(c.ConstrName) + ': ' + str(c.Slack))
-    #printSeperator()
+    # printSeperator()
 except GurobiError:
     print(m.computeIIS())
-    m.write('iis.ilp')
+    m.write("iis.ilp")

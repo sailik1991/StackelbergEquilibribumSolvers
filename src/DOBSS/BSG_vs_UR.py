@@ -20,12 +20,12 @@ __email__ = "link2sailik [at] gmail [dot] com"
 
 try:
 
-    #Create a new model
+    # Create a new model
     m = Model("MIQP")
     m_ur = Model("MIQP_UR")
 
-    f = open(sys.argv[1], 'r')
-    '''
+    f = open(sys.argv[1], "r")
+    """
     ------ Input file ------
     No. of defender strategies (X)
     No. of attackers (L)
@@ -48,24 +48,24 @@ try:
     | 5,0 4,2
     | 4,2 5,0
     |----------------------------------------
-    '''
+    """
 
     # Add defender stategies to the model
     X = int(f.readline())
     x = []
     for i in range(X):
-        n = "x-"+str(i)
+        n = "x-" + str(i)
         x.append(m.addVar(lb=0, ub=1, vtype=GRB.CONTINUOUS, name=n))
     m.update()
-    xr = 1.0/len(x)
+    xr = 1.0 / len(x)
 
     # Add defender stategy constraints
     con = LinExpr()
     for i in range(X):
         con.add(x[i])
-    m.addConstr(con==1)
+    m.addConstr(con == 1)
 
-    ''' Start processing for attacker types '''
+    """ Start processing for attacker types """
 
     L = int(f.readline())
     obj = QuadExpr()
@@ -87,8 +87,15 @@ try:
             q.append(m.addVar(lb=0, ub=1, vtype=GRB.INTEGER, name=n))
             q_ur.append(m_ur.addVar(lb=0, ub=1, vtype=GRB.INTEGER, name=n))
 
-        a = m.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-"+str(l))
-        a_ur = m_ur.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a_ur-"+str(l))
+        a = m.addVar(
+            lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-" + str(l)
+        )
+        a_ur = m_ur.addVar(
+            lb=-GRB.INFINITY,
+            ub=GRB.INFINITY,
+            vtype=GRB.CONTINUOUS,
+            name="a_ur-" + str(l),
+        )
 
         m.update()
         m_ur.update()
@@ -111,8 +118,8 @@ try:
         for i in range(X):
             for j in range(Q):
                 r = p * float(R[i][j])
-                obj.add( r * x[i] * q[j] )
-                obj_ur.add( r * xr * q_ur[j] )
+                obj.add(r * x[i] * q[j])
+                obj_ur.add(r * xr * q_ur[j])
 
         # Add constraints to make attaker have a pure strategy
         con = LinExpr()
@@ -120,8 +127,8 @@ try:
         for j in range(Q):
             con.add(q[j])
             con_ur.add(q_ur[j])
-        m.addConstr(con==1)
-        m_ur.addConstr(con_ur==1)
+        m.addConstr(con == 1)
+        m_ur.addConstr(con_ur == 1)
 
         # Add constrains to make attacker select dominant pure strategy
         for j in range(Q):
@@ -131,13 +138,13 @@ try:
             val_ur.add(a_ur)
             val_sub = 0.0
             for i in range(X):
-                val.add( float(C[i][j]) * x[i], -1.0)
+                val.add(float(C[i][j]) * x[i], -1.0)
                 val_sub += float(C[i][j]) * xr
-            m.addConstr( val >= 0 )
-            m.addConstr( val <= (1-q[j]) * M )
+            m.addConstr(val >= 0)
+            m.addConstr(val <= (1 - q[j]) * M)
             val_ur.add(val_sub, -1.0)
-            m_ur.addConstr( val_ur >= 0 )
-            m_ur.addConstr( val_ur <= (1-q_ur[j]) * M )
+            m_ur.addConstr(val_ur >= 0)
+            m_ur.addConstr(val_ur <= (1 - q_ur[j]) * M)
 
     # Set objective funcion as all attackers have now been considered
     m.setObjective(obj, GRB.MAXIMIZE)
@@ -149,25 +156,25 @@ try:
 
     # Print out values
     def printSeperator():
-        print ('---------------')
+        print("---------------")
 
     printSeperator()
     for v in m.getVars():
-        print('%s -> %g' % (v.varName, v.x))
+        print("%s -> %g" % (v.varName, v.x))
 
     printSeperator()
-    print('Obj -> %g' % m.objVal)
+    print("Obj -> %g" % m.objVal)
     printSeperator()
 
     printSeperator()
     for v in m_ur.getVars():
-        print('%s -> %g' % (v.varName, v.x))
+        print("%s -> %g" % (v.varName, v.x))
 
     printSeperator()
-    print('Obj -> %g' % m_ur.objVal)
+    print("Obj -> %g" % m_ur.objVal)
     printSeperator()
 
 except GurobiError:
-    print('Error reported')
-    #m_ur.computeIIS();
-    #m_ur.write("model.ilp");
+    print("Error reported")
+    # m_ur.computeIIS();
+    # m_ur.write("model.ilp");

@@ -21,31 +21,32 @@ __author__ = "Sailik Sengupta"
 __version__ = "1.0"
 __email__ = "link2sailik [at] gmail [dot] com"
 
+
 def getAllAttacks():
-    '''
+    """
     Reads the input file to obtain attacks for all attackers
     And then make a list of unique attacks
-    '''
-    f = open(sys.argv[1], 'r')
-    f_lines = f.read().split('\n')
+    """
+    f = open(sys.argv[1], "r")
+    f_lines = f.read().split("\n")
     attacks = list()
     for line in f_lines:
-        if '|' in line:
-            a = line.split('|')
+        if "|" in line:
+            a = line.split("|")
             for x in a:
                 attacks.append(x)
     f.close()
-    print list(set(attacks))
+    # print(list(set(attacks)))
     return list(set(attacks))
 
 
 def solveBSG(invalidAttacks):
-    #Create a new model
+    # Create a new model
     m = Model("MIQP")
-    m.setParam('OutputFlag', False)
+    m.setParam("OutputFlag", False)
 
-    f = open(sys.argv[1], 'r')
-    '''
+    f = open(sys.argv[1], "r")
+    """
     ------ Input file ------
     No. of defender strategies (X)
     No. of attackers (L)
@@ -68,12 +69,12 @@ def solveBSG(invalidAttacks):
     | 5,0 4,2
     | 4,2 5,0
     |----------------------------------------
-    '''
+    """
     # Add defender stategies to the model
     X = int(f.readline())
     x = []
     for i in range(X):
-        n = "x-"+str(i)
+        n = "x-" + str(i)
         x.append(m.addVar(lb=0, ub=1, vtype=GRB.CONTINUOUS, name=n))
     m.update()
 
@@ -81,9 +82,9 @@ def solveBSG(invalidAttacks):
     con = LinExpr()
     for i in range(X):
         con.add(x[i])
-    m.addConstr(con==1)
+    m.addConstr(con == 1)
 
-    ''' Start processing for attacker types '''
+    """ Start processing for attacker types """
 
     L = int(f.readline())
     obj = QuadExpr()
@@ -107,10 +108,12 @@ def solveBSG(invalidAttacks):
 
         for i in range(Q):
             if isAttackValid(invalidAttacks, cve_names[i]):
-                n = str(l)+'-'+cve_names[i]
+                n = str(l) + "-" + cve_names[i]
                 q.append(m.addVar(lb=0, ub=1, vtype=GRB.INTEGER, name=n))
 
-        a = m.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-"+str(l))
+        a = m.addVar(
+            lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-" + str(l)
+        )
 
         m.update()
 
@@ -134,23 +137,23 @@ def solveBSG(invalidAttacks):
         for i in range(X):
             for j in range(len(q)):
                 r = p * float(R[i][j])
-                obj.add( r * x[i] * q[j] )
+                obj.add(r * x[i] * q[j])
 
         # Add constraints to make attaker have a pure strategy
         con = LinExpr()
         for j in range(len(q)):
             con.add(q[j])
-        m.addConstr(con==1)
+        m.addConstr(con == 1)
 
         # Add constrains to make attacker select dominant pure strategy
         for j in range(len(q)):
             val = LinExpr()
             val.add(a)
             for i in range(X):
-                val.add( float(C[i][j]) * x[i], -1.0)
+                val.add(float(C[i][j]) * x[i], -1.0)
 
-            m.addConstr( val >= 0 )
-            m.addConstr( val <= (1-q[j]) * M )
+            m.addConstr(val >= 0)
+            m.addConstr(val <= (1 - q[j]) * M)
 
     # Set objective funcion as all attackers have now been considered
     m.setObjective(obj, GRB.MAXIMIZE)
@@ -158,11 +161,11 @@ def solveBSG(invalidAttacks):
     # Solve MIQP
     m.optimize()
 
-    '''
+    """
     Prints out the strategies for the defender and attacker
     after the concerned attacks in invalid attacks are taken out
-    '''
-    '''
+    """
+    """
     # Print out values
     def printSeperator():
         print ('---------------')
@@ -174,11 +177,12 @@ def solveBSG(invalidAttacks):
     printSeperator()
     print('Obj -> %g' % m.objVal)
     printSeperator()
-    '''
+    """
 
     return (m.objVal, m.getVars())
 
-''' Main code starts here '''
+
+""" Main code starts here """
 attack_list = getAllAttacks()
 
 # Gets K-set permutations of attack actions
@@ -197,13 +201,13 @@ for attacks in attack_sets:
     if obj > maxObj:
         maxObj = obj
 
-#for var in maxVar:
+# for var in maxVar:
 #    print str(var)
-print '====='
-print allSet
-print '====='
-print 'Best Obj value -> ' + str(maxObj)
+print("=====")
+print(allSet)
+print("=====")
+print("Best Obj value -> " + str(maxObj))
 
 for attacks, obj in allSet:
     if obj == maxObj:
-        print attacks
+        print(attacks)

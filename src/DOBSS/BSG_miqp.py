@@ -20,16 +20,16 @@ __version__ = "1.0"
 __email__ = "link2sailik [at] gmail [dot] com"
 
 try:
-    #Create a new model
+    # Create a new model
     m = Model("MIQP")
 
-    #if len(sys.argv) < 3:
-    f = open(str(sys.argv[1]), 'r')
-    #f = open('original_game_data_input.txt', 'r')
+    # if len(sys.argv) < 3:
+    f = open(str(sys.argv[1]), "r")
+    # f = open('original_game_data_input.txt', 'r')
 
-    #else:
+    # else:
     #    f = open(sys.argv[2], 'r')
-    '''
+    """
     ------ Input file ------
     No. of defender strategies (X)
     No. of attackers (L)
@@ -52,13 +52,13 @@ try:
     | 5,0 4,2
     | 4,2 5,0
     |----------------------------------------
-    '''
+    """
 
     # Add defender stategies to the model
     X = int(f.readline())
     x = []
     for i in range(X):
-        n = "x-"+str(i)
+        n = "x-" + str(i)
         x.append(m.addVar(lb=0, ub=1, vtype=GRB.CONTINUOUS, name=n))
     m.update()
 
@@ -66,9 +66,9 @@ try:
     con = LinExpr()
     for i in range(X):
         con.add(x[i])
-    m.addConstr(con==1)
+    m.addConstr(con == 1)
 
-    ''' Start processing for attacker types '''
+    """ Start processing for attacker types """
 
     L = int(f.readline())
     obj = QuadExpr()
@@ -78,7 +78,6 @@ try:
 
         # Probability of l-th attacker
         v = f.readline().strip()
-        print v
         p = float(v)
 
         # Add l-th attacker info to the model
@@ -86,10 +85,12 @@ try:
         q = []
         cve_names = f.readline().strip().split("|")
         for i in range(Q):
-            n = str(l)+'-'+cve_names[i]
+            n = str(l) + "-" + cve_names[i]
             q.append(m.addVar(lb=0, ub=1, vtype=GRB.INTEGER, name=n))
 
-        a = m.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-"+str(l))
+        a = m.addVar(
+            lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a-" + str(l)
+        )
 
         m.update()
 
@@ -111,22 +112,22 @@ try:
         for i in range(X):
             for j in range(Q):
                 r = p * float(R[i][j])
-                obj.add( r * x[i] * q[j] )
+                obj.add(r * x[i] * q[j])
 
         # Add constraints to make attaker have a pure strategy
         con = LinExpr()
         for j in range(Q):
             con.add(q[j])
-        m.addConstr(con==1)
+        m.addConstr(con == 1)
 
         # Add constrains to make attacker select dominant pure strategy
         for j in range(Q):
             val = LinExpr()
             val.add(a)
             for i in range(X):
-                val.add( float(C[i][j]) * x[i], -1.0)
-            m.addConstr( val >= 0, q[j].getAttr('VarName')+"lb" )
-            m.addConstr( val <= (1-q[j]) * M, q[j].getAttr('VarName')+"ub" )
+                val.add(float(C[i][j]) * x[i], -1.0)
+            m.addConstr(val >= 0, q[j].getAttr("VarName") + "lb")
+            m.addConstr(val <= (1 - q[j]) * M, q[j].getAttr("VarName") + "ub")
 
     # Set objective funcion as all attackers have now been considered
     m.setObjective(obj, GRB.MAXIMIZE)
@@ -136,21 +137,21 @@ try:
 
     # Print out values
     def printSeperator():
-        print ('---------------')
+        print("---------------")
 
     printSeperator()
     for v in m.getVars():
-        print('%s -> %g' % (v.varName, v.x))
+        print("%s -> %g" % (v.varName, v.x))
 
     printSeperator()
-    print('Obj -> %g' % m.objVal)
+    print("Obj -> %g" % m.objVal)
     printSeperator()
 
     # Prints constrains
-    #printSeperator()
-    #for c in m.getConstrs():
+    # printSeperator()
+    # for c in m.getConstrs():
     #    if c.Slack == 0.0:
     #        print(str(c.ConstrName) + ': ' + str(c.Slack))
-    #printSeperator()
+    # printSeperator()
 except GurobiError:
-    print('Error reported')
+    print("Error reported")
