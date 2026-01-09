@@ -69,7 +69,7 @@ python3 src/DOBSS/BSG_miqp_ortools.py src/DOBSS/input.txt
 python3 src/DOBSS/whatToFix_ortools.py src/DOBSS/input.txt
 ```
 
-### Gurobi Solvers (not tested after I lost my free academic license in 2021)
+### Gurobi Solvers
 
 Gurobi solvers are run via `gurobi.sh` (the Gurobi Python shell):
 
